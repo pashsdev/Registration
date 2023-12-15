@@ -38,8 +38,8 @@ namespace WApp1
             //var externalIpString = externalIpTask.Result ?? IPAddress.Loopback;
             DataContext = new RegistrationViewModel();
 
-            
-            
+
+
 
         }
 
@@ -47,16 +47,13 @@ namespace WApp1
 
         private void register_Click(object sender, RoutedEventArgs e)
         {
-            if (((RegistrationViewModel)DataContext).PostAsync().Result)
-            {
-                Close();
-            }
+            ((RegistrationViewModel)DataContext).PostAsync();
         }
 
         private void license_key_KeyDown(object sender, KeyEventArgs e)
         {
-            
-            
+
+
         }
 
         private string GetMacAddress()

@@ -131,7 +131,7 @@
                         </Validation.ErrorTemplate>
                     </TextBox>
                     <Label Content="MacID" Grid.Row="6" Grid.Column="0" ></Label>
-                    <TextBox Name="macid" IsReadOnly="True" Grid.Row="6" Grid.Column="1"
+                    <TextBox Name="macid" Grid.Row="6" Grid.Column="1"
                              Text="{Binding MacID, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" >
                         <Validation.ErrorTemplate>
                             <ControlTemplate>

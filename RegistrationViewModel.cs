@@ -79,52 +79,78 @@ namespace WApp1
             }
         }
 
+        internal bool IsValid()
+        {
+            bool result = true;
+            if (string.IsNullOrEmpty(Email)
+                || string.IsNullOrEmpty(Password)
+                || string.IsNullOrEmpty(FirstName)
+                || string.IsNullOrEmpty(LastName)
+                || string.IsNullOrEmpty(CompanyName)
+                || string.IsNullOrEmpty(PhoneNumber)
+                || string.IsNullOrEmpty(MacID)
+                || string.IsNullOrEmpty(LicenseKey)
+                || string.IsNullOrEmpty(StaticIP)
+                || string.IsNullOrEmpty(OSID)
+                )
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         public async Task<bool> PostAsync()
         {
             bool result = false;
-            //try
-            //{
-            //    HttpClient httpClient = new HttpClient();
+            try
+            {
+                if (!IsValid())
+                {
+                    return result;
+                }
 
-            //    using StringContent jsonContent = new(
-            //        JsonSerializer.Serialize(new
-            //        {
-            //            email = Email,
-            //            password = Password,
-            //            first_name = FirstName,
-            //            last_name = LastName,
-            //            company_name = CompanyName,
-            //            phone_number = PhoneNumber,
-            //            mac_id = MacID,
-            //            license_key = LicenseKey,
-            //            static_ip = StaticIP,
-            //            os_id = OSID
-            //        }),
-            //        Encoding.UTF8,
-            //        "application/json");
+                HttpClient httpClient = new HttpClient();
 
-            //    using HttpResponseMessage response = await httpClient.PostAsync(
-            //        "https://api.tailortrix.com/rest/api/user/register/",
-            //        jsonContent);
-            //    if (!response.IsSuccessStatusCode)
-            //    {
-            //        var errorResponse = await response.Content.ReadAsStringAsync();
-            //        MessageBox.Show(errorResponse);
-            //    }
-            //    else
-            //    {
-            //        //response.EnsureSuccessStatusCode().WriteRequestToConsole();
+                using StringContent jsonContent = new(
+                    JsonSerializer.Serialize(new
+                    {
+                        email = Email,
+                        password = Password,
+                        first_name = FirstName,
+                        last_name = LastName,
+                        company_name = CompanyName,
+                        phone_number = PhoneNumber,
+                        mac_id = MacID,
+                        license_key = LicenseKey,
+                        static_ip = StaticIP,
+                        os_id = OSID
+                    }),
+                    Encoding.UTF8,
+                    "application/json");
 
-            //        var jsonResponse = await response.Content.ReadAsStringAsync();
-            //        Console.WriteLine($"{jsonResponse}\n");
-            //        MessageBox.Show(jsonResponse);
-            //        result = true;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
-            //}
+                using HttpResponseMessage response = await httpClient.PostAsync(
+                    "https://api.tailortrix.com/rest/api/user/register/",
+                    jsonContent);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorResponse = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show(errorResponse);
+                }
+                else
+                {
+                    //response.EnsureSuccessStatusCode().WriteRequestToConsole();
+
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"{jsonResponse}\n");
+                    MessageBox.Show(jsonResponse);
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
+            }
 
             return result;
         }
