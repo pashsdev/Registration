@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -37,13 +38,7 @@ namespace WApp1
             //GetExternalIpAddress().Wait();
             //var externalIpString = externalIpTask.Result ?? IPAddress.Loopback;
             DataContext = new RegistrationViewModel();
-
-
-
-
         }
-
-
 
         private void register_Click(object sender, RoutedEventArgs e)
         {
@@ -58,8 +53,17 @@ namespace WApp1
 
         private string GetMacAddress()
         {
-            return new DeviceIdBuilder()
-                .AddMacAddress().ToString();
+            //return new DeviceIdBuilder()
+            //    .AddMacAddress().ToString();
+
+            var macAddr =
+                (
+                    from nic in NetworkInterface.GetAllNetworkInterfaces()
+                    where nic.OperationalStatus == OperationalStatus.Up
+                    select nic.GetPhysicalAddress().ToString()
+                ).FirstOrDefault();
+
+            return macAddr;
         }
 
         private string GetOSID()
@@ -99,9 +103,37 @@ namespace WApp1
             return result;
         }
 
+
+        public static string GetUniqueID(string wmiClass, string identifier)
+        {
+            var processorID = "";
+            var query = $"SELECT {identifier} FROM {wmiClass}";
+
+            var oManagementObjectSearcher = new ManagementObjectSearcher(query);
+
+            foreach (var oManagementObject in oManagementObjectSearcher.Get())
+            {
+                processorID = (string)oManagementObject[identifier];
+                break;
+            }
+
+            return processorID;
+        }
+
+        private string GetIds()
+        {
+            string retValue = string.Empty;
+            string processorID = GetUniqueID("Win32_Processor", "ProcessorId");
+            string biosSerialNumber = GetUniqueID("Win32_BIOS", "SerialNumber");
+            string boardSerialNumber = GetUniqueID("Win32_BaseBoard", "SerialNumber");
+
+            retValue = $"{processorID}-{biosSerialNumber}-{boardSerialNumber}-{GetMacAddress()}";
+            return retValue;
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            macid.Text = GetMacAddress();
+            macid.Text = GetIds();
             static_ip.Text = GetIPAddress();
             os_id.Text = GetOSID();
             license_key.Text = GenerateLicenseKey();
